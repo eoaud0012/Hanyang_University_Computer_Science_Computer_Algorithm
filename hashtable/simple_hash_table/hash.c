@@ -49,15 +49,18 @@ void insertHashNode(HashTable* ht, int key, int value)
     node->value = value;
     node->next = NULL;
     // 비어있다면
-    if(ht->table[address]->key == -1 || ht->table[address]->value == -1)
+    if(ht->table[address]->key == -1 && ht->table[address]->value == -1)
         ht->table[address] = node;
 
     // 비어있지 않다면,
-    if(ht->table[address]->key != -1 || ht->table[address]->value != -1) {
+    else if(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
         while(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
             ++address;
             address %= ht->size;
     }
+        ht->table[address]->key = address;
+        ht->table[address]->value = value;
+        ht->table[address]->next = NULL;
 }
 }
 HashNode* findHashNode(HashTable* ht, int key)
