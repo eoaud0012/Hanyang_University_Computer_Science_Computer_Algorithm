@@ -29,7 +29,6 @@ HashTable* makeHashTable(int size)
         }
         HT->table[i]->key = -1;
         HT->table[i]->value = -1;
-        HT->table[i]->next = NULL;
     }
 
 return HT;
@@ -43,39 +42,50 @@ void insertHashNode(HashTable* ht, int key, int value)
 {
     int address;
     address = hash(ht, key);
-    HashNode* node = (HashNode*)malloc(sizeof(struct HashNode));
-    HashNode* temp;
-    node->key = address;
-    node->value = value;
-    node->next = NULL;
     // 비어있다면
-    if(ht->table[address]->key == -1 && ht->table[address]->value == -1)
-        ht->table[address] = node;
-
+    if(ht->table[address]->key == -1 && ht->table[address]->value == -1) {
+        ht->table[address]->key = key;
+        ht->table[address]->value = value;
+    }
     // 비어있지 않다면,
     else if(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
+        address++;
         while(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
             ++address;
             address %= ht->size;
     }
-        ht->table[address]->key = address;
+        ht->table[address]->key = key;
         ht->table[address]->value = value;
-        ht->table[address]->next = NULL;
 }
 }
 HashNode* findHashNode(HashTable* ht, int key)
 {
     int address;
+    int a;
     address = hash(ht, key);
-
-    if(ht->table[address]->key == address)
+    a = address;
+    // 찾고자 하는 값이 바로 있을 때
+    if(ht->table[address]->key == key)
        return ht->table[address];
-return NULL;
+
+    // 바로 없을 때(한바퀴 돌고)
+    else {
+        a++;
+        while(ht->table[a]->key != key) {
+            a++;
+            a %= ht->size;
+            if(a = address - 1) return NULL;
+        }
+        return ht->table[a];
+    }
 }
+
 void deleteHashNode(HashTable* ht, int key) {
     int address = hash(ht, key);
-    if(ht->table[address]->key == address) {
-        free(ht->table[address]);
-        return;
-    }
+
+    // 찾고자 하는 값이 바로 있을 때, 해당 slot에는 없으나 Linear Probing으로 인해 다른 slot에 있을 때 모두 포함하여 수행, free 진행.
+    if(findHashNode(ht, key))
+       free(findHashNode(ht, key));
+    else return;
+        
 }
