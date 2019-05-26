@@ -43,14 +43,14 @@ void insertHashNode(HashTable* ht, int key, int value)
     int address;
     address = hash(ht, key);
     // 비어있다면
-    if(ht->table[address]->key == 0) {
+    if(ht->table[address]->key == 0 && ht->table[address]->value == 0) {
         ht->table[address]->key = key;
         ht->table[address]->value = value;
     }
     // 비어있지 않다면,
-    else if(ht->table[address]->key != 0) {
+    else if(ht->table[address]->key != 0 && ht->table[address]->value != 0) {
         address++;
-        while(ht->table[address]->key != 0) {
+        while(ht->table[address]->key != 0 && ht->table[address]->value != 0) {
             ++address;
             address %= ht->size;
     }
