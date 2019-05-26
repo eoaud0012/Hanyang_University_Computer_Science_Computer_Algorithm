@@ -15,7 +15,7 @@ HashTable* makeHashTable(int size)
     }
     HT->table = (HashNode**)malloc(sizeof(HashNode*)*size);
     HT->size = size;
-//    memset(HT->table, 0, sizeof(HashNode)*size);
+
     if(!HT->table) {
         printf("Out of Memory!");
         return NULL;
@@ -27,8 +27,8 @@ HashTable* makeHashTable(int size)
             printf("Out of Memory!");
             return NULL;
         }
-        HT->table[i]->key = -1;
-        HT->table[i]->value = -1;
+        HT->table[i]->key = 0;
+        HT->table[i]->value = 0;
     }
 
 return HT;
@@ -36,21 +36,21 @@ return HT;
 
 int hash(HashTable* ht, int key) 
 {
-return key % (ht->size);
+    return key % ht->size;
 }
 void insertHashNode(HashTable* ht, int key, int value)
 {
     int address;
     address = hash(ht, key);
     // 비어있다면
-    if(ht->table[address]->key == -1 && ht->table[address]->value == -1) {
+    if(ht->table[address]->key == 0) {
         ht->table[address]->key = key;
         ht->table[address]->value = value;
     }
     // 비어있지 않다면,
-    else if(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
+    else if(ht->table[address]->key != 0) {
         address++;
-        while(ht->table[address]->key != -1 && ht->table[address]->value != -1) {
+        while(ht->table[address]->key != 0) {
             ++address;
             address %= ht->size;
     }
@@ -74,18 +74,22 @@ HashNode* findHashNode(HashTable* ht, int key)
         while(ht->table[a]->key != key) {
             a++;
             a %= ht->size;
-            if(a = address - 1) return NULL;
+            if(a == address) return NULL;
         }
         return ht->table[a];
     }
 }
 
 void deleteHashNode(HashTable* ht, int key) {
-    int address = hash(ht, key);
-
-    // 찾고자 하는 값이 바로 있을 때, 해당 slot에는 없으나 Linear Probing으로 인해 다른 slot에 있을 때 모두 포함하여 수행, free 진행.
-    if(findHashNode(ht, key))
-       free(findHashNode(ht, key));
+    int address = 0;
+    HashNode* temp;
+    // 찾고자 하는 값이 바로 있을 때, 해당 slot에는 없으나 Linear Probing으로 인해 다른 slot에 있을 때 모두 포함하여 수행, 각 값 0 대입 진행.
+    if(findHashNode(ht, key)) {
+        temp = findHashNode(ht, key);
+        temp->key = 0;
+        temp->value = 0;
+    }
+       
     else return;
         
 }

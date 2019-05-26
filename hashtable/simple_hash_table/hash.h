@@ -11,6 +11,7 @@ typedef struct HashNode {
 
 typedef struct HashTable {
     int size;
+    int* visit;
     struct HashNode** table;
     //
 } HashTable;
@@ -21,4 +22,5 @@ void insertHashNode(HashTable* ht, int key, int value);
 HashNode* findHashNode(HashTable* ht, int key);
 void deleteHashNode(HashTable* ht, int key);
 int hash(HashTable* ht, int key);
+double randomDouble(void);
 #endif /* __HASHTABLE_H__ */
