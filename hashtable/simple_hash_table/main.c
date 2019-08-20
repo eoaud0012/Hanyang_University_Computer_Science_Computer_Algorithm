@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
-#include <math.h>
 #include "hash.h"
 
 #define BILLION 1000000000L
@@ -78,7 +76,7 @@ int main(int argc, const char* argv[])
             case 'F': // TODO: find
                 node = findHashNode(ht, key);
                 if (node == NULL) {
-                    fprintf(outputFile, "Not Found\n", key);
+                    fprintf(outputFile, "Not Found\n");
                 } else {
                     fprintf(outputFile, "%d\n", node->value);
                 }

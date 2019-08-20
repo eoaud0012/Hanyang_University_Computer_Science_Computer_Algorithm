@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash.h"
-
 HashTable* makeHashTable(int size)
 {
     int i;
@@ -28,11 +27,8 @@ HashTable* makeHashTable(int size)
             printf("Out of Memory!");
             return NULL;
         }
-        HT->table[i]->key = -1;
-        HT->table[i]->value = -1;
-        HT->table[i]->next = NULL;
     }
-    HT->list = (HashNode**)malloc(sizeof(HashNode*)*size);
+    HT->list = (HashNode***)malloc(sizeof(HashNode**)*size);
     if(!HT->list) {
         printf("Out of Memrory!");
         return NULL;
@@ -40,40 +36,31 @@ HashTable* makeHashTable(int size)
    
 return HT;
 }
-
 int hash(int size, int key)
 {
 return key % size;
 }
 
-/*
-int hash2(int size, int key)
-{
-return (key + 31) * 
-}
-*/
-
 void makeSecondHashNodeList(HashTable* ht) {
     int i = 0;
     int j = 0;
-    while(i < ht->size) {
+    for(i = 0; i < ht->size; i++) {
          if(ht->count[i] >= 1) {
             int newsize = (ht->count[i]) * (ht->count[i]);
-            ht->list[i] = (HashNode*)malloc(sizeof(HashNode)*newsize);
+            ht->list[i] = (HashNode**)malloc(sizeof(HashNode*));
             if(!ht->list[i]) {
                printf("Out of Memrory!");
                return;
             } 
 
+            ht->list[i][j] = (HashNode*)malloc(sizeof(HashNode)*newsize);
+            
             for(j = 0; j < newsize; j++) {
-                 ht->list[i][j].key = -1;
-                 ht->list[i][j].value = -1;
-                 ht->list[i][j].next = NULL;
-             }
+                 ht->list[i][j]->key = -1;
+                 ht->list[i][j]->value = -1;
+            }
          }  
-        i++;
     }
-    
 }
 void insertHashNode(HashTable* ht, int key, int value)
 {
@@ -81,58 +68,55 @@ void insertHashNode(HashTable* ht, int key, int value)
     int address = hash(ht->size, key);
     int second_size = (ht->count[address])*(ht->count[address]);
     int second_address = hash(second_size, key);
-    int a;
-    a = second_address;
+    int second_address_pointer;
 
-    // second_table ì—ì„œ collision ë°œìƒ ì‹œ, Linear Probing ìˆ˜í–‰
-   if(ht->list[address][second_address].key != -1 && ht->list[address][second_address].value != -1) {
-        a++;
-        while(ht->list[address][a].key != -1 && ht->list[address][a].value != -1) {
-            a++;
-            a %= second_size;
-        }
-        ht->list[address][a].key = key;
-        ht->list[address][a].value = value;
-   }
-
-   // second_table ì—ì„œ collision ë°œìƒí•˜ì§€ ì•Šì„ ë•Œ
-    else if(ht->list[address][second_address].key == -1 && ht->list[address][second_address].value == -1) {
-        ht->list[address][second_address].key = key;
-        ht->list[address][second_address].value = value;
+    second_address_pointer = second_address;
+    
+    // second_table ¿ collision ¿ ¿¿¿¿ ¿¿ ¿ 
+    if(ht->list[address][second_address]->key == -1) {
+        ht->list[address][second_address]->key = key;
+        ht->list[address][second_address]->value = value;
     }
 
-    ht->table[address]->next = ht->list[address];
-}    
+    // second_table ¿ collision ¿ ¿¿¿¿ ¿, Linear Probing ¿¿ 
+   if(ht->list[address][second_address]->key != -1) {
+        second_address_pointer++;
+        while(ht->list[address][second_address_pointer]->key != -1) {
+            second_address_pointer++;
+            second_address_pointer %= second_size;
+        }
+        ht->list[address][second_address_pointer]->key = key;
+        ht->list[address][second_address_pointer]->value = value;
+   }
+   }    
 HashNode* findHashNode(HashTable* ht, int key)
 {
     int address = 0;
     int second_address = 0;
     int second_size = 0;
-    int a;
+    int second_address_pointer;
+
     address = hash(ht->size, key);
     second_size = (ht->count[address]) * (ht->count[address]);
     second_address = hash(second_size, key);
-    HashNode* temp = (HashNode*)malloc(sizeof(HashNode));
-    a = second_address;
-    // second tableì—ì„œ ì°¾ê³ ìž í•˜ëŠ” ê°’ì´ ë°”ë¡œ ìžˆì„ ë•Œ
-    if(ht->list[address][second_address].key == key) {
-        temp->key = ht->list[address][second_address].key;
-        temp->value = ht->list[address][second_address].value;
+    HashNode* temp;
+    second_address_pointer = second_address;
+
+    // second table ¿¿ ¿¿¿ ¿ ¿¿ ¿¿ ¿¿¿ ¿¿
+    if(ht->list[address][second_address]->key == key) {
+        temp = ht->list[address][second_address];
     }
-    // second tableì—ì„œ ê·¸ ìžë¦¬ì—ëŠ” ì—†ìœ¼ë‚˜, Linear Probingìœ¼ë¡œ ì¸í•´ ë‹¤ë¥¸ slotì— ìžˆê±°ë‚˜, ì•„ì˜ˆ ì—†ì„ ë•Œ
+    // second table ¿¿ ¿¿¿ ¿ ¿¿ ¿¿ ¿¿ ¿¿¿ ¿¿, Linear Probing ¿¿.
     else {
-        a++;
-        while(ht->list[address][a].key != key) {
-            a++;
-            a %= second_size;
-            if(a = second_address - 1) return NULL;
+        second_address_pointer++;
+        while(ht->list[address][second_address_pointer]->key != key) {
+            second_address_pointer++;
+            second_address_pointer %= second_size;
         }
-        temp->key = ht->list[address][second_address].key;
-        temp->value = ht->list[address][second_address].value;   
+        temp = ht->list[address][second_address_pointer];   
     }
 return temp;
 }
-
 void deleteHashNode(HashTable* ht, int key)
 {
     int address = 0;
@@ -141,10 +125,11 @@ void deleteHashNode(HashTable* ht, int key)
     int second_size = 0;
     second_size = (ht->count[address]) * (ht->count[address]);
     second_address = hash(second_size, key);
-
-    if(findHashNode(ht, key)) {
-        ht->list[address][second_address].key = -1;
-        ht->list[address][second_address].value = -1;
+    HashNode* temp;
+    temp = findHashNode(ht, key);
+    if(temp) {
+        ht->list[address][second_address]->key = -1;
+        ht->list[address][second_address]->value = -1;
     }
     else return;
 }

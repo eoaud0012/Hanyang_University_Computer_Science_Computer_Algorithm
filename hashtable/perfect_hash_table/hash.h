@@ -5,7 +5,6 @@
 typedef struct HashNode {
     int key;
     int value;
-    struct HashNode* next; 
     //
 } HashNode;
 
@@ -13,7 +12,7 @@ typedef struct HashTable {
     int size;
     int* count;
     struct HashNode** table;
-    struct HashNode** list;
+    struct HashNode*** list;
     //
 
 } HashTable;

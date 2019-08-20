@@ -102,7 +102,7 @@ int main(int argc, const char* argv[])
             case 'F': // TODO: find
                 node = findHashNode(ht, key);
                 if (node == NULL) {
-                    fprintf(outputFile, "Not Found\n", key);
+                    fprintf(outputFile, "Not Found\n");
                 } else {
                     fprintf(outputFile, "%d\n", node->value);
                 }
