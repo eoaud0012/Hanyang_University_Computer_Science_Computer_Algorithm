@@ -72,13 +72,13 @@ void insertHashNode(HashTable* ht, int key, int value)
 
     second_address_pointer = second_address;
     
-    // second_table ¿ collision ¿ ¿¿¿¿ ¿¿ ¿ 
+    // second_table ì—ì„œ collision ì´ ì¼ì–´ë‚˜ì§€ ì•Šì„ ê²½ìš° 
     if(ht->list[address][second_address]->key == -1) {
         ht->list[address][second_address]->key = key;
         ht->list[address][second_address]->value = value;
     }
 
-    // second_table ¿ collision ¿ ¿¿¿¿ ¿, Linear Probing ¿¿ 
+    // second_table ì—ì„œ collision ì¼ì–´ë‚  ê²½ìš°, Linear Probing ìˆ˜í–‰ 
    if(ht->list[address][second_address]->key != -1) {
         second_address_pointer++;
         while(ht->list[address][second_address_pointer]->key != -1) {
@@ -102,11 +102,11 @@ HashNode* findHashNode(HashTable* ht, int key)
     HashNode* temp;
     second_address_pointer = second_address;
 
-    // second table ¿¿ ¿¿¿ ¿ ¿¿ ¿¿ ¿¿¿ ¿¿
+    // second table ì—ì„œ ê·¸ ìë¦¬ì— ë°”ë¡œ ê°’ì´ ìˆëŠ” ê²½ìš° 
     if(ht->list[address][second_address]->key == key) {
         temp = ht->list[address][second_address];
     }
-    // second table ¿¿ ¿¿¿ ¿ ¿¿ ¿¿ ¿¿ ¿¿¿ ¿¿, Linear Probing ¿¿.
+    // second table ì—ì„œ ê·¸ ìë¦¬ì— ë°”ë¡œ ê°’ì´ ì—†ëŠ” ê²½ìš°, Linear Probing ìˆ˜í–‰.
     else {
         second_address_pointer++;
         while(ht->list[address][second_address_pointer]->key != key) {
